@@ -2,13 +2,11 @@ package logger
 
 import (
 	"fmt"
-	"gdback/config"
 
 	"io"
 	"os"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"sync"
 	"time"
 
@@ -56,11 +54,27 @@ type formatLogInfo struct {
 	funcname string
 }
 
-func init() {
+// const (
+//     LogLevelInfo LogLevel = 1
+//     LogLevelWarning LogLevel = 2
+//     LogLevelError LogLevel = 3
+// )
+
+// type Options struct {
+//     LogLv LogLevel
+// }
+
+type Options struct {
+	LogLv     string
+	RemainDay int
+	Path      string
+}
+
+func Start(options Options) {
 	createLogFile()
-	loglv = config.Config.GetString("log.level")
-	delfileday, _ = strconv.Atoi(config.Config.GetString("log.remain_day"))
-	logfilepath = config.Config.GetString("log.path")
+	loglv = options.LogLv
+	delfileday = options.RemainDay
+	logfilepath = options.Path
 	DEBUG = NewLogger(loglv, debug_lv, logfilepath)
 	INFO = NewLogger(loglv, info_lv, logfilepath)
 	WARN = NewLogger(loglv, warn_lv, logfilepath)
@@ -89,7 +103,8 @@ func NewLogger(level string, self_lv string, path string) Logger {
 	l := Logger{time: time.Now(), level: level, path: path, filename: filename, self_lv: self_lv}
 	f, openfileerr := os.OpenFile(l.filename, os.O_WRONLY|os.O_CREATE|os.O_SYNC|os.O_APPEND, 0755)
 	if openfileerr != nil {
-		panic(fmt.Errorf("error opening file: %v", openfileerr.Error()))
+		pwd, _ := os.Getwd()
+		panic(fmt.Errorf("error opening file: %v,logfilepath:%v,pwd:%v,filename:%v", openfileerr.Error(), logfilepath, pwd, filename))
 	}
 	// // 输出到控制台
 	// // log := slog.New(slog.NewTextHandler(os.Stdout))

@@ -1,0 +1,15 @@
+{
+    "test": "test111",
+
+    "testhost": {
+        "ip": "127.0.0.1",
+        "port": 1111
+    },
+
+    "testlog": {
+        "level": "debug",
+        "path": "../logs",
+        "remain_day": 30
+    }
+    
+}
